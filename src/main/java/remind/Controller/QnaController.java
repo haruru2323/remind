@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import remind.Model.Question;
 import remind.Repository.QnaRepository;
+import remind.utility.LoginSession;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/question")
@@ -18,8 +21,11 @@ public class QnaController {
 	QnaRepository qnaRepository;
 	
 	@GetMapping("/gotoquestion")
-	public String gotoquestion(){
-		return "/question/question_form";
+	public String gotoquestion(HttpSession session){
+		if(LoginSession.isLogin(session)){
+			return "/question/question_form";
+		}
+		return "/users/login_form";
 	}
 	
 	@PostMapping("")

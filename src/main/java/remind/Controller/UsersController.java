@@ -47,19 +47,34 @@ public class UsersController {
 	}
 
 	@GetMapping("/{id}/gotoupdate")
-	public String gotoupdate(@PathVariable Long id, Model model) {
+	public String gotoupdate(@PathVariable Long id, Model model, HttpSession session) {
+		if(!LoginSession.isLogin(session)){
+			return "/users/login_form";
+		}
+		if(!LoginSession.matchLogin(session,userRepository.findOne(id))){
+			log.debug("사용자가 틀립니다.");
+			return "redirect:/";
+		}
 		model.addAttribute("user", userRepository.findOne(id));
 		return "/users/update_form";
 	}
 
 	@GetMapping("")
-	public String gotoupdate(Model model) {
+	public String userList(Model model, HttpSession session) {
+
 		model.addAttribute("users", userRepository.findAll());
 		return "/users/UserList";
 	}
 
 	@PostMapping("/update/{id}")
-	public String update(@PathVariable Long id, User user) {
+	public String update(@PathVariable Long id, User user, HttpSession session) {
+		if(LoginSession.isLogin(session)){
+			return "/users/login_form";
+		}
+		if(LoginSession.matchLogin(session,userRepository.findOne(id))){
+			log.debug("사용자가 틀립니다.");
+			return "redirect:/";
+		}
 		User dbUser = userRepository.findOne(id);
 		dbUser.update(user);
 		userRepository.save(dbUser);
